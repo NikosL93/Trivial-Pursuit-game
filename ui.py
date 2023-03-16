@@ -6,6 +6,7 @@ from tkinter import messagebox
 
 THEME_COLOR = "#375362"
 
+
 class QuizInterface:
 
     def __init__(self, quiz_brain: QuizBrain,difficulty):
