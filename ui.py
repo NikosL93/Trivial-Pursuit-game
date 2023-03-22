@@ -1,7 +1,6 @@
 from tkinter import *
 from quiz_brain import QuizBrain
 from data import get_data
-from score import calculate_question_score
 from tkinter import messagebox
 
 THEME_COLOR = "#375362"
@@ -55,7 +54,7 @@ class QuizInterface:
 
     def calculate_round_score(self):
         for q in range(9):
-            self.round_score += calculate_question_score(self.quiz.questions_score[q], self.difficulty, 1)
+            self.round_score += self.quiz.calculate_question_score(self.quiz.questions_score[q], self.difficulty, 1)
 
     def new_round(self):
         self.calculate_round_score()
