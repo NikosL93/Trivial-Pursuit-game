@@ -2,6 +2,11 @@ import requests
 import tkinter as tk
 from tkinter import ttk
 import tkinter.font as tkFont
+from data import get_data
+from quiz_brain import QuizBrain
+from quiz_ui import QuizInterface
+import main
+import json
 
 
 class QuizApp:
@@ -66,7 +71,7 @@ class QuizApp:
         # Main Menu Buttons
         self.startquiz_button = tk.Button(self.menu_frame, background="orange", text="Start Quiz !",
                                           command=self.get_questions, padx=70,
-                                          pady=15, font=self.font_style)
+                                          pady=20, font=self.font_style)
         self.startquiz_button.pack(anchor="center", pady=20)
         self.topscores_button = tk.Button(self.menu_frame, background="grey", text="Top Scores !",
                                           command=self.create_topscores_frame, padx=70,
@@ -93,7 +98,6 @@ class QuizApp:
             ("category", self.categories[category])]
         response_f = requests.get(url="https://opentdb.com/api.php", params=parameters)
         question_data = response_f.json()["results"]
-        print(question_data)
         self.menu_frame.pack_forget()
         self.create_question_frame()
 
@@ -111,16 +115,10 @@ class QuizApp:
         self.menu_frame.pack(fill="both", expand=True)
 
     def create_question_frame(self):
-        self.question_frame = ttk.Frame(self.root, style="MyFrame.TFrame")
-        self.question_frame.pack(fill="both", expand=True)
-        self.bg_image1 = tk.PhotoImage(file="pngwing.com(1).png")
-        self.bg_label1 = tk.Label(self.question_frame, image=self.bg_image1, bg="#747780")
-        self.bg_label1.place(x=0, y=0, relwidth=1, relheight=1)
-        self.q_label = tk.Label(self.question_frame, background="orange", text="QUESTIONS", font=self.font_style)
-        self.q_label.pack()
-        self.q_button = tk.Button(self.question_frame, text="Go to Main Menu", font=self.font_style,
-                                  command=self.return_to_mainmenu)
-        self.q_button.pack(pady=100)
+        difficulty = self.difficulty_var.get()
+        category = self.category_var.get()
+        name = self.name_entry.get()
+        main.start_quiz(self.root, difficulty, self.categories[category], name)  # σύνδεση με main του Νικου Λυμπιτάκη
 
     def create_topscores_frame(self):
         self.menu_frame.pack_forget()
@@ -131,15 +129,27 @@ class QuizApp:
         self.topscore_frame.pack(fill="both", expand=True)
         self.topscores_label = tk.Label(self.topscore_frame, background="orange", text="Top Scores",
                                         font=self.font_style)
-        self.topscores_label.pack()
+        self.topscores_label.pack(pady=10)
+        try:
+            with open("scores", "r") as file:
+                scores = json.load(file)
+                data_items = scores.items()  # το μετατρεπω σε list από tuples key-value
+                sorted_data_items = sorted(data_items, key=lambda x: x[1], reverse=True) # #με το key και το x: x[1]
+                # παιρνει το 2ο στοιχειο του tuple το score δλδ σαν παραμαετρο για να ταξινομησει και με το reverse το κανει σε αυξουσα σειρα
+                sorted_scores = {}
+                for name, score in sorted_data_items: # κανει unpack τo tuple kα ιτο μετατρέπω σε dict πάλι
+                    sorted_scores[name] = score
+                data = ""
+                for name in sorted_scores:
+                    data += "\n" + name + "  " + str(sorted_scores[name])
+        except:
+            print("Error opening scores")
+
+        scores_lbl = tk.Label(self.topscore_frame, text=data, font=self.font_style)
+        scores_lbl.pack(pady=20)
         self.topscores_button = tk.Button(self.topscore_frame, text="Go to Main Menu", font=self.font_style,
                                           command=self.return_to_mainmenu)
-        self.topscores_button.pack(pady=100)
-        name = self.name_entry.get()
-        score = 0
-        self.scores[name] = score
-        for i, j in self.scores.items():
-            print(i, ":", j)
+        self.topscores_button.pack()
 
 
 if __name__ == "__main__":
