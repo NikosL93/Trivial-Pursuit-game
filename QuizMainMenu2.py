@@ -2,6 +2,10 @@ import requests
 import tkinter as tk
 from tkinter import ttk
 import tkinter.font as tkFont
+from data import get_data
+from quiz_brain import QuizBrain
+from ui import QuizInterface
+import main
 
 
 class QuizApp:
@@ -93,7 +97,6 @@ class QuizApp:
             ("category", self.categories[category])]
         response_f = requests.get(url="https://opentdb.com/api.php", params=parameters)
         question_data = response_f.json()["results"]
-        print(question_data)
         self.menu_frame.pack_forget()
         self.create_question_frame()
 
@@ -111,16 +114,19 @@ class QuizApp:
         self.menu_frame.pack(fill="both", expand=True)
 
     def create_question_frame(self):
-        self.question_frame = ttk.Frame(self.root, style="MyFrame.TFrame")
-        self.question_frame.pack(fill="both", expand=True)
-        self.bg_image1 = tk.PhotoImage(file="pngwing.com(1).png")
-        self.bg_label1 = tk.Label(self.question_frame, image=self.bg_image1, bg="#747780")
-        self.bg_label1.place(x=0, y=0, relwidth=1, relheight=1)
-        self.q_label = tk.Label(self.question_frame, background="orange", text="QUESTIONS", font=self.font_style)
-        self.q_label.pack()
-        self.q_button = tk.Button(self.question_frame, text="Go to Main Menu", font=self.font_style,
-                                  command=self.return_to_mainmenu)
-        self.q_button.pack(pady=100)
+        #self.question_frame = ttk.Frame(self.root, style="MyFrame.TFrame")
+        #self.question_frame.pack(fill="both", expand=True)
+        difficulty = self.difficulty_var.get()
+        category = self.category_var.get()
+        main.start_quiz(self.root,difficulty, self.categories[category])
+        #self.bg_image1 = tk.PhotoImage(file="pngwing.com(1).png")
+        #self.bg_label1 = tk.Label(self.question_frame, image=self.bg_image1, bg="#747780")
+        #self.bg_label1.place(x=0, y=0, relwidth=1, relheight=1)
+        #self.q_label = tk.Label(self.question_frame, background="orange", text="QUESTIONS", font=self.font_style)
+        #self.q_label.pack()
+        #self.q_button = tk.Button(self.question_frame, text="Go to Main Menu", font=self.font_style,
+        #                          command=self.return_to_mainmenu)
+        #self.q_button.pack(pady=100)
 
     def create_topscores_frame(self):
         self.menu_frame.pack_forget()

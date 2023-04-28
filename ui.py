@@ -3,23 +3,29 @@ from quiz_brain import QuizBrain
 from data import get_data
 from tkinter import messagebox
 
+
 THEME_COLOR = "#375362"
 
 
 class QuizInterface:
 
-    def __init__(self, quiz_brain: QuizBrain,difficulty):
+    def __init__(self, quiz_brain: QuizBrain,difficulty,category, tk_root):
         #τα κανω property με το self γτ θελω να τα χρησιμοποιω σ ολη τη κλασση ενω το false_button κανονική μεταβλητη.
         self.difficulty = difficulty
+        self.category = category
         self.quiz = quiz_brain
-        self.window = Tk()
-        self.window.title("Trivial")
-        self.window.config(padx=80, pady=20, bg=THEME_COLOR)
         self.round_score = 0
         self.total_score = 0
-        self.score_label = Label(text="", fg="white", bg=THEME_COLOR)
-        self.score_label.grid(row=0, column=1)
-        self.canvas = Canvas(width=600, height=500, bg="#37625C")
+        self.rounds = 0 # σύνολο γύρων
+        self.prev_round_questions_unanswered = 0
+        self.curr_round_questions_unanswered = 0
+        self.window = Frame(tk_root, bg="grey")
+        #self.window.title("Trivial")
+        self.window.config(padx=80, pady=20)
+        #self.score_label = Label(text="", fg="white", bg=THEME_COLOR)
+        #self.score_label.grid(row=0, column=1)
+        self.window.grid(row=0,column=0)
+        self.canvas = Canvas(width=600, height=500, bg="grey")
         bg = PhotoImage(file="images/pngwing.com.png")
         self.canvas.create_image(0,0, image=bg, anchor="nw")
         self.question_text = self.canvas.create_text(
@@ -34,7 +40,7 @@ class QuizInterface:
 
         true_image = PhotoImage(file="images/true.png")
         self.true_button = Button(image=true_image, highlightthickness=0, command=self.true_pressed)
-        self.true_button.grid(row=3, column=0,columnspan=2)
+        self.true_button.grid(row=3, column=1)
 
         false_image = PhotoImage(file="images/false.png")
         self.false_button = Button(image=false_image, highlightthickness=0, command=self.false_pressed)
@@ -42,15 +48,16 @@ class QuizInterface:
 
         prev_image = PhotoImage(file="images/back.png")
         self.prev_button = Button(image=prev_image, highlightthickness=0, command=self.get_prev_question)
-        self.prev_button.grid(row=2, column=1,sticky=E,padx=5) # to sticky=E το μετατοπιζει στο τερμα ανατολικα
+        self.prev_button.grid(row=1, column=0, sticky=E, padx=10) # to sticky=E το μετατοπιζει στο τερμα ανατολικα
 
         next_image = PhotoImage(file="images/next.png")
-        self.next_button = Button(image=next_image, highlightthickness=0, command=self.get_next_question)
-        self.next_button.grid(row=2, column=2, sticky=W)
+        self.next_button = Button(image=next_image,bg="BLACK", highlightthickness=0, command=self.get_next_question)
+        self.next_button.grid(row=1, column=3, sticky=W, padx=10)
 
         if self.quiz.still_has_questions():
             self.get_next_question()
         self.window.mainloop()
+
 
     def calculate_round_score(self):
         for q in range(9):
@@ -59,11 +66,31 @@ class QuizInterface:
     def new_round(self):
         self.calculate_round_score()
         self.total_score += self.round_score
+        self.rounds += 1
+        if self.rounds == 1: #αρχικη περίπτωση 1ου γυρου
+            for q in range(9):
+                if self.quiz.questions_answered[q] == 0: self.prev_round_questions_unanswered += 1
+        else:
+            for q in range(9): #περιπτωση 1+ γύρων
+                if self.quiz.questions_answered[q] == 0 : self.curr_round_questions_unanswered += 1
+            if self.prev_round_questions_unanswered > 3 and self.curr_round_questions_unanswered > 3: #game-over
+                messagebox.showinfo("Information",
+                                    f"Game-over!\nRound score: {self.round_score}\nTotal score: {self.total_score}")
+                self.window.after(100, self.yes_button.destroy)
+                self.window.after(100, self.no_button.destroy)
+                self.window.after(100, self.false_button.destroy)
+                self.window.after(100, self.true_button.destroy)
+                self.window.after(100, self.prev_button.destroy)
+                self.window.after(100, self.next_button.destroy)
+                self.canvas.itemconfig(self.question_text, text="Game-over!")
+                return 0
+            self.prev_round_questions_unanswered = self.curr_round_questions_unanswered
+            self.curr_round_questions_unanswered = 0
         self.window.after(100, self.yes_button.destroy)
         self.window.after(100, self.no_button.destroy)
         messagebox.showinfo("Information", f"Round score: {self.round_score} \n Total score: {self.total_score}")
         self.round_score = 0
-        question_bank = get_data(self.difficulty)
+        question_bank = get_data(self.difficulty,self.category)
         self.quiz = QuizBrain(question_bank)
         self.window.after(1000, self.get_next_question)
 
@@ -75,10 +102,12 @@ class QuizInterface:
         if self.quiz.still_has_questions():
             q_text = self.quiz.next_question()
             self.canvas.itemconfig(self.question_text, text=q_text)
+            self.true_button['state'] = 'active' #μετα την εμφανιση της επομενης ερωτησης τα buttons γινονται active
+            self.false_button['state'] = 'active'
         else:
             self.canvas.itemconfig(self.question_text, text="You've reached the end of the quiz. Another round?")
             self.yes_button = Button(self.canvas, text="YES", command=self.new_round)
-            self.yes_button.place(x=200,y=450)
+            self.yes_button.place(x=200, y=450)
             self.no_button = Button(self.canvas, text="NO", command=exit)
             self.no_button.place(x=350, y=450)
 
@@ -90,13 +119,16 @@ class QuizInterface:
         if self.quiz.question_number > 0:
             q_text = self.quiz.prev_question()
             self.canvas.itemconfig(self.question_text, text=q_text)
+            self.true_button['state'] = 'active'
+            self.false_button['state'] = 'active'
 
     def true_pressed(self):
         self.quiz.check_answer("True")
+        self.true_button['state'] = 'disabled'
         self.window.after(1000, self.get_next_question)
-
     def false_pressed(self):
         self.quiz.check_answer("False")
+        self.false_button['state'] = 'disabled'
         self.window.after(1000, self.get_next_question)
 
 
