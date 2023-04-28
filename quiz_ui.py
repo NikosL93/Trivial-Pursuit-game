@@ -2,14 +2,15 @@ from tkinter import *
 from quiz_brain import QuizBrain
 from data import get_data
 from tkinter import messagebox
-import json
+
+
+THEME_COLOR = "#375362"
 
 
 class QuizInterface:
 
-    def __init__(self, quiz_brain: QuizBrain,difficulty,category, tk_root, name):
+    def __init__(self, quiz_brain: QuizBrain,difficulty,category, tk_root):
         #τα κανω property με το self γτ θελω να τα χρησιμοποιω σ ολη τη κλασση ενω το false_button κανονική μεταβλητη.
-        self.name = name
         self.difficulty = difficulty
         self.category = category
         self.quiz = quiz_brain
@@ -19,7 +20,10 @@ class QuizInterface:
         self.prev_round_questions_unanswered = 0
         self.curr_round_questions_unanswered = 0
         self.window = Frame(tk_root, bg="grey")
+        #self.window.title("Trivial")
         self.window.config(padx=80, pady=20)
+        #self.score_label = Label(text="", fg="white", bg=THEME_COLOR)
+        #self.score_label.grid(row=0, column=1)
         self.window.grid(row=0,column=0)
         self.canvas = Canvas(width=600, height=500, bg="grey")
         bg = PhotoImage(file="images/pngwing.com.png")
@@ -31,7 +35,9 @@ class QuizInterface:
             text="Some Question Text",
             font=("Arial", 20, "italic",)
         )
-        self.canvas.grid(row=1, column=1, columnspan=2, pady=50)
+        self.canvas.grid(row=1, column=1, columnspan=2, pady=50) #row=1 γιατι θελω να ναι κατω απ το score π ειναι 0
+        #και το pady ειναι το περιθωριο κατω απ το score
+
         true_image = PhotoImage(file="images/true.png")
         self.true_button = Button(image=true_image, highlightthickness=0, command=self.true_pressed)
         self.true_button.grid(row=3, column=1)
@@ -52,26 +58,14 @@ class QuizInterface:
             self.get_next_question()
         self.window.mainloop()
 
+
     def calculate_round_score(self):
         for q in range(9):
             self.round_score += self.quiz.calculate_question_score(self.quiz.questions_score[q], self.difficulty, 1)
 
-    def calculate_total_score(self):
-        self.total_score += self.round_score
-        try:
-            with open("scores", "r") as file:
-                data = json.load(file)
-        except FileNotFoundError:
-            data = {}  # σε περιπτωση που δεν υπαρχει το αρχειο δημιουργει ενα κενο dict
-        data[self.name] = self.total_score
-        with open("scores", "w") as file:
-            json.dump(data, file)
-
     def new_round(self):
-        # Υπολογισμός συνολικού σκορ σε κάθε καινούργιο γύρο και συνολικού σκορ
         self.calculate_round_score()
-        self.calculate_total_score()
-        # έλεγχος αν υπάρχουν 3 + ερωτήσεις μη απαντημένες σε 2 συνεχόμενους γύρους
+        self.total_score += self.round_score
         self.rounds += 1
         if self.rounds == 1: #αρχικη περίπτωση 1ου γυρου
             for q in range(9):
