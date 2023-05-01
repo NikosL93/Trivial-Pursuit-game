@@ -2,9 +2,6 @@ import requests
 import tkinter as tk
 from tkinter import ttk
 import tkinter.font as tkFont
-from data import get_data
-from quiz_brain import QuizBrain
-from quiz_ui import QuizInterface
 import main
 import json
 
@@ -15,7 +12,7 @@ class QuizApp:
         self.root = tk.Tk()
         self.root.geometry("800x700")
         self.root.title("Quiz Start Window")
-
+ 
         # Επιλογή των fonts
         self.font_style = ("BankGothic Md BT", 15)
 
@@ -70,7 +67,7 @@ class QuizApp:
 
         # Main Menu Buttons
         self.startquiz_button = tk.Button(self.menu_frame, background="orange", text="Start Quiz !",
-                                          command=self.get_questions, padx=70,
+                                          command=self.create_question_frame, padx=70,
                                           pady=20, font=self.font_style)
         self.startquiz_button.pack(anchor="center", pady=20)
         self.topscores_button = tk.Button(self.menu_frame, background="grey", text="Top Scores !",
@@ -87,19 +84,6 @@ class QuizApp:
             categories[category_element["name"]] = category_element["id"]
         return categories
 
-    # Ανάκτηση των ερωτήσεων απο το API
-    def get_questions(self):
-        difficulty = self.difficulty_var.get()
-        category = self.category_var.get()
-        parameters = [
-            ("amount", 9),
-            ("type", "multiple"),
-            ("difficulty", difficulty),
-            ("category", self.categories[category])]
-        response_f = requests.get(url="https://opentdb.com/api.php", params=parameters)
-        question_data = response_f.json()["results"]
-        self.menu_frame.pack_forget()
-        self.create_question_frame()
 
     def validate_name_input(self, s):
         if s.isalnum():
@@ -115,10 +99,11 @@ class QuizApp:
         self.menu_frame.pack(fill="both", expand=True)
 
     def create_question_frame(self):
+        self.menu_frame.pack_forget()
         difficulty = self.difficulty_var.get()
         category = self.category_var.get()
         name = self.name_entry.get()
-        main.start_quiz(self.root, difficulty, self.categories[category], name)  # σύνδεση με main του Νικου Λυμπιτάκη
+        main.start_quiz(self, difficulty, self.categories[category], name )  # σύνδεση με main του Νικου Λυμπιτάκη
 
     def create_topscores_frame(self):
         self.menu_frame.pack_forget()

@@ -4,11 +4,11 @@ from data import get_data
 from tkinter import messagebox
 import json
 
-
 class QuizInterface:
 
-    def __init__(self, quiz_brain: QuizBrain,difficulty,category, tk_root, name):
+    def __init__(self, quiz_brain: QuizBrain, quizapp, difficulty, category, name):
         #τα κανω property με το self γτ θελω να τα χρησιμοποιω σ ολη τη κλασση ενω το false_button κανονική μεταβλητη.
+        self.quizapp = quizapp
         self.name = name
         self.difficulty = difficulty
         self.category = category
@@ -18,12 +18,15 @@ class QuizInterface:
         self.rounds = 0 # σύνολο γύρων
         self.prev_round_questions_unanswered = 0
         self.curr_round_questions_unanswered = 0
-        self.window = Frame(tk_root, bg="grey")
-        self.window.config(padx=80, pady=20)
-        self.window.grid(row=0,column=0)
-        self.canvas = Canvas(width=600, height=500, bg="grey")
+        self.window = Frame(quizapp.root, bg="#747780")
+        self.window.pack(fill=BOTH, expand=True,)
+
+        self.main_menu = Button(self.window, text="Main Menu", command=self.return_to_main_menu, font=quizapp.font_style)
+        self.main_menu.pack(side=TOP,  pady=5)
+
+        self.canvas = Canvas(self.window, width=600, height=500, bg="#777480")
         bg = PhotoImage(file="images/pngwing.com.png")
-        self.canvas.create_image(0,0, image=bg, anchor="nw")
+        self.canvas.create_image(0, 0, image=bg, anchor="nw")
         self.question_text = self.canvas.create_text(
             300,
             410,
@@ -31,26 +34,34 @@ class QuizInterface:
             text="Some Question Text",
             font=("Arial", 20, "italic",)
         )
-        self.canvas.grid(row=1, column=1, columnspan=2, pady=50)
+        self.canvas.pack(side=TOP, pady=30)
+
         true_image = PhotoImage(file="images/true.png")
-        self.true_button = Button(image=true_image, highlightthickness=0, command=self.true_pressed)
-        self.true_button.grid(row=3, column=1)
+        self.true_button = Button(self.window, image=true_image, highlightthickness=0, command=self.true_pressed)
+        self.true_button.pack(side=LEFT, padx=10)
 
         false_image = PhotoImage(file="images/false.png")
-        self.false_button = Button(image=false_image, highlightthickness=0, command=self.false_pressed)
-        self.false_button.grid(row=3, column=2)
+        self.false_button = Button(self.window, image=false_image, highlightthickness=0, command=self.false_pressed)
+        self.false_button.pack(side=RIGHT, padx=10)
 
         prev_image = PhotoImage(file="images/back.png")
-        self.prev_button = Button(image=prev_image, highlightthickness=0, command=self.get_prev_question)
-        self.prev_button.grid(row=1, column=0, sticky=E, padx=10) # to sticky=E το μετατοπιζει στο τερμα ανατολικα
+        self.prev_button = Button(self.window, image=prev_image, highlightthickness=0, command=self.get_prev_question)
+        self.prev_button.pack(side=LEFT, padx=100)
 
         next_image = PhotoImage(file="images/next.png")
-        self.next_button = Button(image=next_image,bg="BLACK", highlightthickness=0, command=self.get_next_question)
-        self.next_button.grid(row=1, column=3, sticky=W, padx=10)
+        self.next_button = Button(self.window, image=next_image, bg="BLACK", highlightthickness=0,
+                                  command=self.get_next_question)
+        self.next_button.pack(side=RIGHT, padx=100)
+
+
 
         if self.quiz.still_has_questions():
             self.get_next_question()
         self.window.mainloop()
+
+    def return_to_main_menu(self):
+        self.window.pack_forget()
+        self.quizapp.menu_frame.pack(side="top", fill="both", expand=True)
 
     def calculate_round_score(self):
         for q in range(9):
