@@ -2,15 +2,14 @@ from tkinter import *
 from quiz_brain import QuizBrain
 from data import get_data
 from tkinter import messagebox
-
-
-THEME_COLOR = "#375362"
-
+import json
 
 class QuizInterface:
 
-    def __init__(self, quiz_brain: QuizBrain,difficulty,category, tk_root):
+    def __init__(self, quiz_brain: QuizBrain, quizapp, difficulty, category, name):
         #τα κανω property με το self γτ θελω να τα χρησιμοποιω σ ολη τη κλασση ενω το false_button κανονική μεταβλητη.
+        self.quizapp = quizapp
+        self.name = name
         self.difficulty = difficulty
         self.category = category
         self.quiz = quiz_brain
@@ -19,15 +18,15 @@ class QuizInterface:
         self.rounds = 0 # σύνολο γύρων
         self.prev_round_questions_unanswered = 0
         self.curr_round_questions_unanswered = 0
-        self.window = Frame(tk_root, bg="grey")
-        #self.window.title("Trivial")
-        self.window.config(padx=80, pady=20)
-        #self.score_label = Label(text="", fg="white", bg=THEME_COLOR)
-        #self.score_label.grid(row=0, column=1)
-        self.window.grid(row=0,column=0)
-        self.canvas = Canvas(width=600, height=500, bg="grey")
+        self.window = Frame(quizapp.root, bg="#747780")
+        self.window.pack(fill=BOTH, expand=True)
+
+        self.main_menu = Button(self.window, text="Main Menu", command=self.return_to_main_menu, font=quizapp.font_style)
+        self.main_menu.pack(side=TOP,  pady=5)
+
+        self.canvas = Canvas(self.window, width=600, height=500, bg="#777480")
         bg = PhotoImage(file="images/pngwing.com.png")
-        self.canvas.create_image(0,0, image=bg, anchor="nw")
+        self.canvas.create_image(0, 0, image=bg, anchor="nw")
         self.question_text = self.canvas.create_text(
             300,
             410,
@@ -35,37 +34,67 @@ class QuizInterface:
             text="Some Question Text",
             font=("Arial", 20, "italic",)
         )
-        self.canvas.grid(row=1, column=1, columnspan=2, pady=50) #row=1 γιατι θελω να ναι κατω απ το score π ειναι 0
-        #και το pady ειναι το περιθωριο κατω απ το score
+        self.canvas.pack(side=TOP, pady=30)
 
         true_image = PhotoImage(file="images/true.png")
-        self.true_button = Button(image=true_image, highlightthickness=0, command=self.true_pressed)
-        self.true_button.grid(row=3, column=1)
+        self.true_button = Button(self.window, image=true_image, highlightthickness=0, command=self.true_pressed)
+        self.true_button.pack(side=LEFT, padx=10)
 
         false_image = PhotoImage(file="images/false.png")
-        self.false_button = Button(image=false_image, highlightthickness=0, command=self.false_pressed)
-        self.false_button.grid(row=3, column=2)
+        self.false_button = Button(self.window, image=false_image, highlightthickness=0, command=self.false_pressed)
+        self.false_button.pack(side=RIGHT, padx=10)
 
         prev_image = PhotoImage(file="images/back.png")
-        self.prev_button = Button(image=prev_image, highlightthickness=0, command=self.get_prev_question)
-        self.prev_button.grid(row=1, column=0, sticky=E, padx=10) # to sticky=E το μετατοπιζει στο τερμα ανατολικα
+        self.prev_button = Button(self.window, image=prev_image, highlightthickness=0, command=self.get_prev_question)
+        self.prev_button.pack(side=LEFT, padx=100)
 
         next_image = PhotoImage(file="images/next.png")
-        self.next_button = Button(image=next_image,bg="BLACK", highlightthickness=0, command=self.get_next_question)
-        self.next_button.grid(row=1, column=3, sticky=W, padx=10)
+        self.next_button = Button(self.window, image=next_image, bg="BLACK", highlightthickness=0,
+                                  command=self.get_next_question)
+        self.next_button.pack(side=RIGHT, padx=100)
+
+
 
         if self.quiz.still_has_questions():
             self.get_next_question()
         self.window.mainloop()
 
+    def return_to_main_menu(self):
+        self.window.pack_forget()
+        self.quizapp.menu_frame.pack(side="top", fill="both", expand=True)
 
     def calculate_round_score(self):
         for q in range(9):
             self.round_score += self.quiz.calculate_question_score(self.quiz.questions_score[q], self.difficulty, 1)
 
-    def new_round(self):
-        self.calculate_round_score()
+    def calculate_total_score(self):
         self.total_score += self.round_score
+        try:
+            with open("scores", "r") as file:
+                data = json.load(file)
+        except FileNotFoundError:
+            data = {}  # σε περιπτωση που δεν υπαρχει το αρχειο δημιουργει ενα κενο dict
+        data[self.name] = self.total_score
+        with open("scores", "w") as file:
+            json.dump(data, file)
+    def gameover(self):
+        self.calculate_round_score()
+        self.calculate_total_score()
+        messagebox.showinfo("Information",
+                            f"Game-over!\nRound score: {self.round_score}\nTotal score: {self.total_score}")
+        self.window.after(100, self.yes_button.destroy)
+        self.window.after(100, self.no_button.destroy)
+        self.window.after(100, self.false_button.destroy)
+        self.window.after(100, self.true_button.destroy)
+        self.window.after(100, self.prev_button.destroy)
+        self.window.after(100, self.next_button.destroy)
+        self.canvas.itemconfig(self.question_text, text="Game-over!")
+        return 0
+    def new_round(self):
+        # Υπολογισμός συνολικού σκορ σε κάθε καινούργιο γύρο και συνολικού σκορ
+        self.calculate_round_score()
+        self.calculate_total_score()
+        # έλεγχος αν υπάρχουν 3 + ερωτήσεις μη απαντημένες σε 2 συνεχόμενους γύρους
         self.rounds += 1
         if self.rounds == 1: #αρχικη περίπτωση 1ου γυρου
             for q in range(9):
@@ -108,7 +137,7 @@ class QuizInterface:
             self.canvas.itemconfig(self.question_text, text="You've reached the end of the quiz. Another round?")
             self.yes_button = Button(self.canvas, text="YES", command=self.new_round)
             self.yes_button.place(x=200, y=450)
-            self.no_button = Button(self.canvas, text="NO", command=exit)
+            self.no_button = Button(self.canvas, text="NO", command=self.gameover)
             self.no_button.place(x=350, y=450)
 
     def get_prev_question(self):

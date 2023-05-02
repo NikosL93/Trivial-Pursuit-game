@@ -1,5 +1,4 @@
 import html
-import html
 
 
 class QuizBrain:
