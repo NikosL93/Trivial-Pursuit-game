@@ -2,9 +2,10 @@ import requests
 import tkinter as tk
 from tkinter import ttk
 import tkinter.font as tkFont
-import main
+import quiz_brain
+import data
 import json
-
+import quiz_ui
 
 class QuizApp:
     def __init__(self):
@@ -12,7 +13,7 @@ class QuizApp:
         self.root = tk.Tk()
         self.root.geometry("800x700")
         self.root.title("Quiz Start Window")
- 
+        self.root.resizable(False, False)
         # Επιλογή των fonts
         self.font_style = ("BankGothic Md BT", 15)
 
@@ -103,7 +104,9 @@ class QuizApp:
         difficulty = self.difficulty_var.get()
         category = self.category_var.get()
         name = self.name_entry.get()
-        main.start_quiz(self, difficulty, self.categories[category], name )  # σύνδεση με main του Νικου Λυμπιτάκη
+        question_bank = data.get_data(difficulty, self.categories[category])
+        quiz = quiz_brain.QuizBrain(question_bank)
+        quiz_ui.QuizInterface(quiz, self, difficulty, self.categories[category], name) #συνδεση με quiz_ui.py
 
     def create_topscores_frame(self):
         self.menu_frame.pack_forget()

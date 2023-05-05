@@ -82,19 +82,19 @@ class QuizInterface:
         self.calculate_total_score()
         messagebox.showinfo("Information",
                             f"Game-over!\nRound score: {self.round_score}\nTotal score: {self.total_score}")
+        self.canvas.itemconfig(self.question_text, text="Game-over!")
         self.window.after(100, self.yes_button.destroy)
         self.window.after(100, self.no_button.destroy)
         self.window.after(100, self.false_button.destroy)
         self.window.after(100, self.true_button.destroy)
         self.window.after(100, self.prev_button.destroy)
         self.window.after(100, self.next_button.destroy)
-        self.canvas.itemconfig(self.question_text, text="Game-over!")
         return 0
     def new_round(self):
         # Υπολογισμός συνολικού σκορ σε κάθε καινούργιο γύρο και συνολικού σκορ
         self.calculate_round_score()
         self.calculate_total_score()
-        # έλεγχος αν υπάρχουν 3 + ερωτήσεις μη απαντημένες σε 2 συνεχόμενους γύρους
+        # έλεγχος αν υπάρχουν >3 ερωτήσεις μη απαντημένες σε 2 συνεχόμενους γύρους σε κάθε γύρο
         self.rounds += 1
         if self.rounds == 1: #αρχικη περίπτωση 1ου γυρου
             for q in range(9):
