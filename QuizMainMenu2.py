@@ -27,7 +27,7 @@ class QuizApp:
         self.style.configure("MyFrame.TFrame", background="#747780")
 
         # Εφαρμογή του background
-        self.bg_image = tk.PhotoImage(file="pngwing.com.png")
+        self.bg_image = tk.PhotoImage(file="images/start_frame_bg.png")
         self.bg_label = tk.Label(self.menu_frame, image=self.bg_image, bg="#747780")
         self.bg_label.place(x=0, y=0, relwidth=1, relheight=1)
 
@@ -111,7 +111,7 @@ class QuizApp:
     def create_topscores_frame(self):
         self.menu_frame.pack_forget()
         self.topscore_frame = ttk.Frame(self.root, style="MyFrame.TFrame")
-        self.bg_image2 = tk.PhotoImage(file="pngwing.com(2).png")
+        self.bg_image2 = tk.PhotoImage(file="images/scores_bg.png")
         self.bg_label2 = tk.Label(self.topscore_frame, image=self.bg_image2, bg="#747780")
         self.bg_label2.place(x=0, y=0, relwidth=1, relheight=1)
         self.topscore_frame.pack(fill="both", expand=True)

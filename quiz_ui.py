@@ -25,7 +25,7 @@ class QuizInterface:
         self.main_menu.pack(side=TOP,  pady=5)
 
         self.canvas = Canvas(self.window, width=600, height=500, bg="#777480")
-        bg = PhotoImage(file="images/pngwing.com.png")
+        bg = PhotoImage(file="images/quiz_bg.png")
         self.canvas.create_image(0, 0, image=bg, anchor="nw")
         self.question_text = self.canvas.create_text(
             300,
