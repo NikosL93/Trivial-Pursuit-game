@@ -1,11 +1,12 @@
 import requests
 from question_model import Question
 
-def get_data(difficulty):
+def get_data(difficulty,category):
     parameters = {
-        "amount": 3,
+        "amount": 9,
         "type": "boolean",
-        "difficulty": difficulty
+        "difficulty": difficulty,
+        "category": category
     }
 
     response = requests.get("https://opentdb.com/api.php", params=parameters)
@@ -18,5 +19,4 @@ def get_data(difficulty):
         question_answer = question["correct_answer"]
         new_question = Question(question_text, question_answer) #δημιουργεί αντικείμενο κλάσσης Question
         question_bank.append(new_question)
-
     return question_bank
