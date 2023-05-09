@@ -2,6 +2,7 @@ import requests
 import tkinter as tk
 from tkinter import ttk
 import tkinter.font as tkFont
+import tkinter.messagebox as messagebox
 import quiz_brain
 import data
 import json
@@ -11,7 +12,7 @@ class QuizApp:
     def __init__(self):
         # Main Window
         self.root = tk.Tk()
-        self.root.geometry("800x700")
+        self.root.geometry("950x750")
         self.root.title("Quiz Start Window")
         self.root.resizable(False, False)
         # Επιλογή των fonts
@@ -74,7 +75,7 @@ class QuizApp:
         self.topscores_button = tk.Button(self.menu_frame, background="grey", text="Top Scores !",
                                           command=self.create_topscores_frame, padx=70,
                                           pady=15, font=self.font_style)
-        self.topscores_button.pack(anchor="center", pady=130)
+        self.topscores_button.pack(anchor="center", pady=150)
 
     # Ανάκτηση του λεξικού κατηγοριών από το API
     def get_categories(self):
@@ -105,6 +106,12 @@ class QuizApp:
         category = self.category_var.get()
         name = self.name_entry.get()
         question_bank = data.get_data(difficulty, self.categories[category])
+        # Έλεγχος αν το ΑΡΙ επιστρέφει ερωτήσεις
+        if not question_bank:
+            messagebox.showerror("No Questions !",
+                              "No TRUE - FALSE questions available for this category. Please choose another category.")
+            self.return_to_mainmenu()
+            return
         quiz = quiz_brain.QuizBrain(question_bank)
         quiz_ui.QuizInterface(quiz, self, difficulty, self.categories[category], name) #συνδεση με quiz_ui.py
 
