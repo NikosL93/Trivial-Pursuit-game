@@ -36,6 +36,7 @@ class QuizBrain:
             print("right answer")
             return True
         else:
+            print("wrong answer")
             return False
 
     def calculate_question_score(self, answer, difficulty, time):

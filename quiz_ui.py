@@ -13,6 +13,7 @@ class QuizInterface:
         self.difficulty = difficulty
         self.category = category
         self.quiz = quiz_brain
+        quizapp.root.title("Trivial Quiz")
         self.round_score = 0
         self.total_score = 0
         self.rounds = 0 # σύνολο γύρων
@@ -53,14 +54,13 @@ class QuizInterface:
                                   command=self.get_next_question)
         self.next_button.pack(side=RIGHT, padx=100)
 
-
-
         if self.quiz.still_has_questions():
             self.get_next_question()
         self.window.mainloop()
 
     def return_to_main_menu(self):
         self.window.pack_forget()
+        self.quizapp.root.title("Quiz Start Window")
         self.quizapp.menu_frame.pack(side="top", fill="both", expand=True)
 
     def calculate_round_score(self):
@@ -70,13 +70,14 @@ class QuizInterface:
     def calculate_total_score(self):
         self.total_score += self.round_score
         try:
-            with open("scores", "r") as file:
+            with open("scores.json", "r") as file:
                 data = json.load(file)
         except FileNotFoundError:
             data = {}  # σε περιπτωση που δεν υπαρχει το αρχειο δημιουργει ενα κενο dict
         data[self.name] = self.total_score
-        with open("scores", "w") as file:
+        with open("scores.json", "w") as file:
             json.dump(data, file)
+
     def gameover(self):
         self.calculate_round_score()
         self.calculate_total_score()
