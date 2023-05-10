@@ -3,6 +3,7 @@ from quiz_brain import QuizBrain
 from data import get_data
 from tkinter import messagebox
 import json
+from quiz_timer import QuizTimer  # Εισαγωγή της QuizTimer class
 
 class QuizInterface:
 
@@ -54,6 +55,8 @@ class QuizInterface:
                                   command=self.get_next_question)
         self.next_button.pack(side=RIGHT, padx=100)
 
+        self.timer = QuizTimer(self.window, self.gameover)  # Initialize της QuizTimer class στην μεταβλητή timer
+
         if self.quiz.still_has_questions():
             self.get_next_question()
         self.window.mainloop()
@@ -84,12 +87,14 @@ class QuizInterface:
         messagebox.showinfo("Information",
                             f"Game-over!\nRound score: {self.round_score}\nTotal score: {self.total_score}")
         self.canvas.itemconfig(self.question_text, text="Game-over!")
-        self.window.after(100, self.yes_button.destroy)
-        self.window.after(100, self.no_button.destroy)
-        self.window.after(100, self.false_button.destroy)
-        self.window.after(100, self.true_button.destroy)
-        self.window.after(100, self.prev_button.destroy)
-        self.window.after(100, self.next_button.destroy)
+        try:
+            self.window.after(100, self.yes_button.destroy)
+            self.window.after(100, self.no_button.destroy)
+            self.window.after(100, self.false_button.destroy)
+            self.window.after(100, self.true_button.destroy)
+            self.window.after(100, self.prev_button.destroy)
+            self.window.after(100, self.next_button.destroy)
+        except: pass
         return 0
     def new_round(self):
         # Υπολογισμός συνολικού σκορ σε κάθε καινούργιο γύρο και συνολικού σκορ
