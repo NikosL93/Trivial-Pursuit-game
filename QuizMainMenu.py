@@ -8,13 +8,14 @@ import data
 import json
 import quiz_ui
 
+
 class QuizApp:
     def __init__(self):
         # Main Window
         self.root = tk.Tk()
         self.root.geometry("950x750")
         self.root.title("Quiz Start Window")
-        self.root.resizable(False, False)
+        self.root.resizable(True, True)
         # Επιλογή των fonts
         self.font_style = ("BankGothic Md BT", 15)
 
@@ -28,12 +29,12 @@ class QuizApp:
         self.style.configure("MyFrame.TFrame", background="#747780")
 
         # Εφαρμογή του background
-        self.bg_image = tk.PhotoImage(file="images/start_frame_bg.png")
+        self.bg_image = tk.PhotoImage(file="images/pngwing.com.png")
         self.bg_label = tk.Label(self.menu_frame, image=self.bg_image, bg="#747780")
         self.bg_label.place(x=0, y=0, relwidth=1, relheight=1)
 
         # Δημιουργία εισαγωγής ονόματος
-        self.name_label = tk.Label(self.menu_frame, bd=5, background="orange", text="Enter your name:",
+        self.name_label = tk.Label(self.menu_frame, bd=5, background="orange", text="Enter Your Name:",
                                    font=self.font_style)
         self.name_label.pack()
         self.name_entry = tk.Entry(self.menu_frame, width=20, bd=5, font=self.font_style, validate="key",
@@ -43,7 +44,7 @@ class QuizApp:
         self.scores = {}
 
         # Δημιουργία μενού για την επιλογή δυσκολίας
-        self.diff_label = tk.Label(self.menu_frame, background="orange", text="Please choose a difficulty level",
+        self.diff_label = tk.Label(self.menu_frame, background="orange", text="Please Choose a Difficulty Level",
                                    font=self.font_style)
         self.diff_label.pack()
         self.difficulty_var = tk.StringVar(value="easy")
@@ -56,7 +57,7 @@ class QuizApp:
         # Δημιουργία Combobox για την επιλογή κατηγορίας
         self.categories = self.get_categories()
         self.category_var = tk.StringVar(value="General Knowledge")
-        self.category_label = tk.Label(self.menu_frame, background="orange", text="Please choose a Question category",
+        self.category_label = tk.Label(self.menu_frame, background="orange", text="Please Choose a Question Category",
                                        font=self.font_style)
         self.category_label.pack()
         self.category_options = list(self.categories.keys())
@@ -70,12 +71,12 @@ class QuizApp:
         # Main Menu Buttons
         self.startquiz_button = tk.Button(self.menu_frame, background="orange", text="Start Quiz !",
                                           command=self.create_question_frame, padx=70,
-                                          pady=20, font=self.font_style)
+                                          pady=20, font=("BankGothic Md BT", 16))
         self.startquiz_button.pack(anchor="center", pady=20)
-        self.topscores_button = tk.Button(self.menu_frame, background="grey", text="Top Scores !",
+        self.topscores_button = tk.Button(self.menu_frame, background="#6fc5f3", text="Top Scores",
                                           command=self.create_topscores_frame, padx=70,
                                           pady=15, font=self.font_style)
-        self.topscores_button.pack(anchor="center", pady=150)
+        self.topscores_button.pack(anchor="center", pady=(5, 200), side=tk.BOTTOM)
 
     # Ανάκτηση του λεξικού κατηγοριών από το API
     def get_categories(self):
@@ -85,7 +86,6 @@ class QuizApp:
         for category_element in categories_data:
             categories[category_element["name"]] = category_element["id"]
         return categories
-
 
     def validate_name_input(self, s):
         if s.isalnum():
@@ -109,11 +109,11 @@ class QuizApp:
         # Έλεγχος αν το ΑΡΙ επιστρέφει ερωτήσεις
         if not question_bank:
             messagebox.showerror("No Questions !",
-                              "No TRUE - FALSE questions available for this category. Please choose another category.")
+                                 "No TRUE - FALSE questions available for this category. Please choose another category.")
             self.return_to_mainmenu()
             return
         quiz = quiz_brain.QuizBrain(question_bank)
-        quiz_ui.QuizInterface(quiz, self, difficulty, self.categories[category], name) #συνδεση με quiz_ui.py
+        quiz_ui.QuizInterface(quiz, self, difficulty, self.categories[category], name)  # συνδεση με quiz_ui.py
 
     def create_topscores_frame(self):
         self.menu_frame.pack_forget()
@@ -122,28 +122,31 @@ class QuizApp:
         self.bg_label2 = tk.Label(self.topscore_frame, image=self.bg_image2, bg="#747780")
         self.bg_label2.place(x=0, y=0, relwidth=1, relheight=1)
         self.topscore_frame.pack(fill="both", expand=True)
-        self.topscores_label = tk.Label(self.topscore_frame, background="orange", text="Top Scores",
-                                        font=self.font_style)
-        self.topscores_label.pack(pady=10)
+        self.topscores_label = tk.Label(self.topscore_frame, background="orange", text="TOP SCORES",
+                                        font=("BankGothic Md BT", 25))
+        self.topscores_label.pack(pady=5)
         try:
             with open("scores.json", "r") as file:
                 scores = json.load(file)
-                data_items = scores.items()  # το μετατρεπω σε list από tuples key-value
-                sorted_data_items = sorted(data_items, key=lambda x: x[1], reverse=True) # #με το key και το x: x[1]
-                # παιρνει το 2ο στοιχειο του tuple το score δλδ σαν παραμαετρο για να ταξινομησει και με το reverse το κανει σε αυξουσα σειρα
+                data_items = scores.items()  # το μετατρέπω σε list από tuples key-value
+                sorted_data_items = sorted(data_items, key=lambda x: x[1], reverse=True)  # #με το key και το x: x[1]
+                # παίρνει το 2ο στοιχείο του tuple το score δλδ σαν παράμετρο για να ταξινομήσει και με το reverse το κανει σε αυξουσα σειρα
                 sorted_scores = {}
-                for name, score in sorted_data_items: # κανει unpack τo tuple kα ιτο μετατρέπω σε dict πάλι
+                for name, score in sorted_data_items:  # κάνει unpack τo tuple kαι το μετατρέπω σε dict πάλι
                     sorted_scores[name] = score
                 data = ""
-                for name in sorted_scores:
-                    data += "\n" + name + "  " + str(sorted_scores[name])
-                scores_lbl = tk.Label(self.topscore_frame, text=data, font=self.font_style)
-                scores_lbl.pack(pady=20)
+                max_entries = 10
+                for i, (name, score) in enumerate(sorted_scores.items(), 1):  # Η enumerate ξεκινάει από 1
+                    if i > max_entries:
+                        break
+                    data += "{:<2}{:<20}{:<2}\n".format(str(i) + ".", name, score)
+                scores_lbl = tk.Label(self.topscore_frame, text=data, font=("Consolas", 20), bg="#6fc5f3", pady=1)
+                scores_lbl.pack(pady=(20, 10))
         except Exception as e:
             print(e)
-        self.topscores_button = tk.Button(self.topscore_frame, text="Go to Main Menu", font=self.font_style,
-                                          command=self.return_to_mainmenu)
-        self.topscores_button.pack()
+        self.topscores_button = tk.Button(self.topscore_frame, text="Go To Main Menu", font=self.font_style,
+                                          command=self.return_to_mainmenu, padx=70, pady=20, bg="#ccd9de")
+        self.topscores_button.pack(pady=(20, 1))
 
 
 if __name__ == "__main__":

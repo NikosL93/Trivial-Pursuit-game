@@ -20,3 +20,4 @@ def get_data(difficulty,category):
         new_question = Question(question_text, question_answer) #δημιουργεί αντικείμενο κλάσσης Question
         question_bank.append(new_question)
     return question_bank
+
