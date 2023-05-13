@@ -23,8 +23,8 @@ class QuizInterface:
         self.window = Frame(quizapp.root, bg="#747780")
         self.window.pack(fill=BOTH, expand=True)
 
-        self.main_menu = Button(self.window, text="Main Menu", command=self.return_to_main_menu, font=quizapp.font_style)
-        self.main_menu.pack(side=TOP,  pady=5)
+        self.main_menu = Button(self.window, text="Main Menu", command=self.return_to_main_menu, font=quizapp.font_style, padx=70, bg="#ccd9de")
+        self.main_menu.pack(side=TOP,  pady=2)
 
         self.canvas = Canvas(self.window, width=600, height=500, bg="#777480")
         bg = PhotoImage(file="images/quiz_bg.png")
@@ -38,22 +38,22 @@ class QuizInterface:
         )
         self.canvas.pack(side=TOP, pady=30)
 
-        true_image = PhotoImage(file="images/true.png")
+        true_image = PhotoImage(file="images/True.png")
         self.true_button = Button(self.window, image=true_image, highlightthickness=0, command=self.true_pressed)
-        self.true_button.pack(side=LEFT, padx=10)
+        self.true_button.pack(side=LEFT, padx=10, pady=5)
 
-        false_image = PhotoImage(file="images/false.png")
+        false_image = PhotoImage(file="images/False.png")
         self.false_button = Button(self.window, image=false_image, highlightthickness=0, command=self.false_pressed)
-        self.false_button.pack(side=RIGHT, padx=10)
+        self.false_button.pack(side=RIGHT, padx=10, pady=5)
 
         prev_image = PhotoImage(file="images/back.png")
         self.prev_button = Button(self.window, image=prev_image, highlightthickness=0, command=self.get_prev_question)
-        self.prev_button.pack(side=LEFT, padx=100)
+        self.prev_button.pack(side=LEFT, padx=(100, 5))
 
         next_image = PhotoImage(file="images/next.png")
-        self.next_button = Button(self.window, image=next_image, bg="BLACK", highlightthickness=0,
+        self.next_button = Button(self.window, image=next_image, highlightthickness=0,
                                   command=self.get_next_question)
-        self.next_button.pack(side=RIGHT, padx=100)
+        self.next_button.pack(side=RIGHT, padx=(5, 100))
 
         self.timer = QuizTimer(self.window, self.gameover)  # Initialize της QuizTimer class στην μεταβλητή timer
 
@@ -62,6 +62,7 @@ class QuizInterface:
         self.window.mainloop()
 
     def return_to_main_menu(self):
+        self.timer.stop_timer()
         self.window.pack_forget()
         self.quizapp.root.title("Quiz Start Window")
         self.quizapp.menu_frame.pack(side="top", fill="both", expand=True)
@@ -69,6 +70,9 @@ class QuizInterface:
     def calculate_round_score(self):
         for q in range(9):
             self.round_score += self.quiz.calculate_question_score(self.quiz.questions_score[q], self.difficulty, 1)
+        remaining_time = self.timer.get_remaining_time()
+        if remaining_time > 0:
+            self.round_score *= remaining_time
 
     def calculate_total_score(self):
         self.total_score += self.round_score
@@ -76,13 +80,16 @@ class QuizInterface:
             with open("scores.json", "r") as file:
                 data = json.load(file)
         except FileNotFoundError:
-            data = {}  # σε περιπτωση που δεν υπαρχει το αρχειο δημιουργει ενα κενο dict
+            data = {}  # σε περίπτωση που δεν υπάρχει το αρχείο δημιουργεί ενα κενό dict
         data[self.name] = self.total_score
         with open("scores.json", "w") as file:
             json.dump(data, file)
+        if self.total_score > max(data.values(), default=0):
+            messagebox.showinfo("Συγχαρητήρια!\n", "Έχεις πετύχει την υψηλότερη βαθμολογία!")
 
     def gameover(self):
         self.calculate_round_score()
+        self.timer.stop_timer()
         self.calculate_total_score()
         messagebox.showinfo("Information",
                             f"Game-over!\nRound score: {self.round_score}\nTotal score: {self.total_score}")
@@ -99,6 +106,7 @@ class QuizInterface:
     def new_round(self):
         # Υπολογισμός συνολικού σκορ σε κάθε καινούργιο γύρο και συνολικού σκορ
         self.calculate_round_score()
+        self.timer.stop_timer()
         self.calculate_total_score()
         # έλεγχος αν υπάρχουν >3 ερωτήσεις μη απαντημένες σε 2 συνεχόμενους γύρους σε κάθε γύρο
         self.rounds += 1
@@ -127,6 +135,7 @@ class QuizInterface:
         self.round_score = 0
         question_bank = get_data(self.difficulty,self.category)
         self.quiz = QuizBrain(question_bank)
+        self.timer.restart_timer()
         self.window.after(1000, self.get_next_question)
 
     def get_next_question(self):
