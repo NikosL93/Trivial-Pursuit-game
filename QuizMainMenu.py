@@ -130,7 +130,7 @@ class QuizApp:
                 scores = json.load(file)
                 data_items = scores.items()  # το μετατρέπω σε list από tuples key-value
                 sorted_data_items = sorted(data_items, key=lambda x: x[1], reverse=True)  # #με το key και το x: x[1]
-                # παίρνει το 2ο στοιχείο του tuple το score δλδ σαν παράμετρο για να ταξινομήσει και με το reverse το κανει σε αυξουσα σειρα
+                # παίρνει το 2ο στοιχείο του tuple το score δηλαδή σαν παράμετρο για να ταξινομήσει και με το reverse το κανει σε φθίνουσα σειρά
                 sorted_scores = {}
                 for name, score in sorted_data_items:  # κάνει unpack τo tuple kαι το μετατρέπω σε dict πάλι
                     sorted_scores[name] = score

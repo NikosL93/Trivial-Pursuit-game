@@ -6,7 +6,7 @@ class QuizTimer:
         self.root = root
         self.submit_answers = submit_answers
         self.font_style = ("Consolas", 14)
-        self.total_time = 30
+        self.total_time = 180
         self.remaining_time = self.total_time
         self.timer_label = tk.Label(self.root, text="Time remaining: {} sec".format(self.total_time), font=self.font_style, bg="#747780", background="black", foreground="white")
         self.timer_label.pack(fill=tk.BOTH, padx=50, pady=2, side=tk.TOP, expand=True)

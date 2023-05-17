@@ -1,6 +1,6 @@
 from data import get_data
 from quiz_brain import QuizBrain
-from ui import QuizInterface
+from quiz_ui import QuizInterface
 from tkinter import *
 from tkinter import messagebox
 

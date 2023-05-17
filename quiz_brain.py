@@ -4,12 +4,12 @@ import html
 class QuizBrain:
 
     def __init__(self, q_list):
-        self.question_number = -1  # -1 γτ to next question τρεχει και στο init
+        self.question_number = -1  # -1 γτ to next question τρέχει και στο init
         self.questions_score = {}
         self.questions_answered = {}
         for q in range(9):
-            self.questions_score[q] = 0   # αρχικοποιηση λεξικού απαντήσεων (0 λαθος 1 σωστή)
-            self.questions_answered[q] = 0 # αρχικοποιηση λεξικού απαντημένων ερωτήσεων (0 αναπαντητη 1 απαντημενη)
+            self.questions_score[q] = 0   # αρχικοποίηση λεξικού απαντήσεων (0 λάθος 1 σωστή)
+            self.questions_answered[q] = 0 # αρχικοποίηση λεξικού απαντημένων ερωτήσεων (0 αναπάντητη 1 απαντημένη)
         self.question_list = q_list
         self.current_question = None
 
@@ -39,12 +39,12 @@ class QuizBrain:
             print("wrong answer")
             return False
 
-    def calculate_question_score(self, answer, difficulty, time):
+    def calculate_question_score(self, answer, difficulty):
         if difficulty.lower() == 'easy':
             difficulty = 1
         elif difficulty.lower() == 'medium':
             difficulty = 2
         else:
             difficulty = 3
-        return answer * difficulty * time
+        return answer * difficulty
 

@@ -69,8 +69,8 @@ class QuizInterface:
 
     def calculate_round_score(self):
         for q in range(9):
-            self.round_score += self.quiz.calculate_question_score(self.quiz.questions_score[q], self.difficulty, 1)
-        remaining_time = self.timer.get_remaining_time()
+            self.round_score += self.quiz.calculate_question_score(self.quiz.questions_score[q], self.difficulty)
+        remaining_time = self.timer.get_remaining_time() # υπολειπόμενος χρόνος για τον υπολογισμό του σκορ
         if remaining_time > 0:
             self.round_score *= remaining_time
 
