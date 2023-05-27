@@ -8,9 +8,8 @@ import data
 import json
 import quiz_ui
 
-
 class QuizApp:
-    def __init__(self):
+    def __init__(self, StartingWindow):
         # Main Window
         self.root = tk.Tk()
         self.root.geometry("950x750")
@@ -37,17 +36,26 @@ class QuizApp:
         self.name_label = tk.Label(self.menu_frame, bd=5, background="orange", text="Enter Your Name:",
                                    font=self.font_style)
         self.name_label.pack()
+
+
         self.name_entry = tk.Entry(self.menu_frame, width=20, bd=5, font=self.font_style, validate="key",
                                    validatecommand=(
                                        self.root.register(self.validate_name_input), '%S'))
+
+        # *** Εισαγωγή ονόματος παίχτη από την StartingWindow(εισαγωγή αυτής της γραμμής από Δέσποινα Μ.) ***
+        self.name_entry.insert(0,StartingWindow.fullname)
         self.name_entry.pack()
+
         self.scores = {}
 
         # Δημιουργία μενού για την επιλογή δυσκολίας
         self.diff_label = tk.Label(self.menu_frame, background="orange", text="Please Choose a Difficulty Level",
                                    font=self.font_style)
         self.diff_label.pack()
-        self.difficulty_var = tk.StringVar(value="easy")
+
+        # *** Εισαγωγή difficulty από την StartingWindow (συμπλήρωση-αλλαγή αυτής της γραμμής από Δέσποινα Μ.) ***
+        self.difficulty_var = tk.StringVar(value=StartingWindow.difficulty)
+
         self.difficulty_dropdown = ttk.Combobox(self.menu_frame, width=25, textvariable=self.difficulty_var,
                                                 state="readonly",
                                                 values=["easy", "medium", "hard"],
@@ -130,7 +138,7 @@ class QuizApp:
                 scores = json.load(file)
                 data_items = scores.items()  # το μετατρέπω σε list από tuples key-value
                 sorted_data_items = sorted(data_items, key=lambda x: x[1], reverse=True)  # #με το key και το x: x[1]
-                # παίρνει το 2ο στοιχείο του tuple το score δηλαδή σαν παράμετρο για να ταξινομήσει και με το reverse το κανει σε φθίνουσα σειρά
+                # παίρνει το 2ο στοιχείο του tuple το score δλδ σαν παράμετρο για να ταξινομήσει και με το reverse το κανει σε αυξουσα σειρα
                 sorted_scores = {}
                 for name, score in sorted_data_items:  # κάνει unpack τo tuple kαι το μετατρέπω σε dict πάλι
                     sorted_scores[name] = score
@@ -148,7 +156,3 @@ class QuizApp:
                                           command=self.return_to_mainmenu, padx=70, pady=20, bg="#ccd9de")
         self.topscores_button.pack(pady=(20, 1))
 
-
-if __name__ == "__main__":
-    app = QuizApp()
-    app.root.mainloop()
