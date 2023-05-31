@@ -118,8 +118,8 @@ class StartingWindow:
         # καλώ την μέθοδο destroy για να κλείσω το παράθυρο
         self.window.destroy()
 
-        # Δημιουργώ αντικείμενο QuizApp από την QuizMainMenu και του στέλνω ως όρισμα το αντικείμενο game της κλάσης StartingWindow
-        QuizApp(game)
+        # Δημιουργώ αντικείμενο MainMenuQuizApp από την QuizMainMenu και του στέλνω ως όρισμα το αντικείμενο game της κλάσης StartingWindow
+        MainMenuQuizApp(game)
 
 
 # ελέγχει αν το τρέχον script εκτελείται ως το κύριο script και όχι ως ένα εισαγόμενο module
