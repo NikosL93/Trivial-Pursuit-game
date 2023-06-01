@@ -179,7 +179,7 @@ class QuizInterface:
         else:
             self.canvas.itemconfig(self.question_text, text="You've reached the end of the quiz. Another round?")
             self.yes_button = Button(self.canvas, text="YES", padx=30, command=self.new_round)
-            self.yes_button.place(x=200, y=450)
+            self.yes_button.place(x=150, y=450)
             self.no_button = Button(self.canvas, text="NO", padx=30, command=self.gameover)
             self.no_button.place(x=350, y=450)
 
