@@ -10,7 +10,6 @@ from answer_status import AnswerInfoLabel  # Εισαγωγή της AnswerInfoL
 class QuizInterface:
 
     def __init__(self, quiz_brain: QuizBrain, quizapp, difficulty, category, name):
-        # τα κάνω property με το self γτ θέλω να τα χρησιμοποιώ σ ολη την κλάση ενω το false_button κανονική μεταβλητή.
         self.quiz = quiz_brain
         self.quizapp = quizapp
         self.difficulty = difficulty
