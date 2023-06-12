@@ -2,6 +2,17 @@ from QuizMainMenu import *
 from tkinter import *
 from tkinter import messagebox
 
+# κάνει το παράθυρο να ανοίγει στο κέντρο της οθόνης
+def center_window(root, width=300, height=200):
+    # παίρνει τις διαστάσεις την οθόνης, ύψος, πλάτος σε mm
+    screen_width = root.winfo_screenwidth()
+    screen_height = root.winfo_screenheight()
+
+    # υπολογίζει τις συντεταγμένες του πάνω αριστερού μέρους του παραθύρου
+    position_top = int(screen_height / 2 - height / 2)
+    position_left = int(screen_width / 2 - width / 2)
+
+    root.geometry(f'{width}x{height}+{position_left}+{position_top}')
 
 class StartingWindow:
     def __init__(self):
@@ -13,7 +24,8 @@ class StartingWindow:
         # Δημιουργεί το παράθυρο
         self.window = Tk()
         self.window.title("Trivial")
-        self.window.geometry("500x400")
+        # καλεί τη συνάρτηση για να εμφανίσει το παράθυρο στο κέντρο της οθόνης
+        center_window(self.window, 500, 400)
 
         # Φορτώνει τις εικόνες του background
         self.background_image = PhotoImage(file="images/background_start4.png")
