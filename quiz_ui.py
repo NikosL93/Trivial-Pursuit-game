@@ -86,7 +86,7 @@ class QuizInterface:
 
     def calculate_total_score(self):
         self.total_score += self.round_score
-        try:
+        try:  # Αποθήκευση total score σε αρχείο json
             with open("scores.json", "r") as file:
                 data = json.load(file)
         except FileNotFoundError:
