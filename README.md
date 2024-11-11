@@ -1,11 +1,19 @@
-Game description:
+Trivial Pursuit Game
 
-Knowledge game with True/False answers where a player chooses difficulty level and category of questions.
-The game keeps time to answer each question. Score is calculated based on player's time and correct answers and is displayed at "Top scores" menu.
+A knowledge-based trivia game with True/False questions where players compete for high scores. Players select a difficulty level and a question category to start. Each question is timed, and scoring depends on speed and accuracy, with top scores displayed in the Top Scores menu.
 
-Installation instructions:
+Features
 
-1. Install Python (https://www.python.org) on the computer
-2. Installation of the requests library ("pip install requests" command at the command prompt)
-3. All files and the images folder must be in the same folder
-4. The program runs from the file starting_window.py (double click)
+	•	Dynamic Question Selection: Integrates with the Trivial Pursuit API to fetch questions by difficulty and category.
+	•	High Score Tracking: Records and displays high scores based on player performance.
+	•	Timer-Based Scoring: Score is calculated based on response speed and correctness.
+
+Installation Instructions
+
+	  1.	Install Python: Download here.
+	  2.	Install Required Libraries: Open a command prompt and run: pip install requests
+  	  3.	Set Up Game Files: Ensure all files and the “images” folder are in the same directory.
+	  4.	Run the Game: Launch the game by double-clicking starting_window.py.
+   
+
+ 
