@@ -1,6 +1,6 @@
 Trivial Pursuit Game
 
-A knowledge-based trivia game with True/False questions where players compete for high scores. Players select a difficulty level and a question category to start. Each question is timed, and scoring depends on speed and accuracy, with top scores displayed in the Top Scores menu.
+A knowledge-based trivial project with True/False questions for PLHPRO course at Hellenic Open university, where players compete for high scores. Players select a difficulty level and a question category to start. Each question is timed, and scoring depends on speed and accuracy, with top scores displayed in the Top Scores menu.
 
 Features
 
